@@ -125,11 +125,11 @@ Try {
 		Show-InstallationProgress
 
 		## <Perform Pre-Installation tasks here>
-		$NETFrameworkVersion = Get-RegistryKey -Key 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Client' -Value 'Release'
-
-		If(394806 -ine $NETFrameworkVersion) {
-			Show-InstallationProgress -StatusMessage 'Installing .NET Framework 4.6.2...'
-			Execute-Process -Path "$dirSupportFiles\NDP462.exe" -Parameters '/q /norestart' -WindowStyle 'Hidden' -IgnoreExitCodes '3010'
+		## Installer in case someone doesn't have .NET 4.6.2 - Engineering now should be using 4.7.1 so this is not needed.
+		## $NETFrameworkVersion = Get-RegistryKey -Key 'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Client' -Value 'Release'
+		## If(394806 -ine $NETFrameworkVersion) {
+			## Show-InstallationProgress -StatusMessage 'Installing .NET Framework 4.6.2...'
+			## Execute-Process -Path "$dirSupportFiles\NDP462.exe" -Parameters '/q /norestart' -WindowStyle 'Hidden' -IgnoreExitCodes '3010'
 
 		##*===============================================
 		##* INSTALLATION
