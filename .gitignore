@@ -38,3 +38,6 @@ Default.rdp
 #Installation Files
 
 /Files/
+
+#VS Code stuff
+/.vscode/
