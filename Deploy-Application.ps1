@@ -63,13 +63,13 @@ Try {
 	##*===============================================
 	## Variables: Application
 	[string]$appVendor = 'NI'
-	[string]$appName = 'Circuit Design Suite'
+	[string]$appName = 'Circuit Design Suite (Multisim & Ultiboard)'
 	[string]$appVersion = '14.3'
 	[string]$appArch = 'x64'
 	[string]$appLang = 'EN'
 	[string]$appRevision = '01'
 	[string]$appScriptVersion = '1.0.0'
-	[string]$appScriptDate = '06/23/2022'
+	[string]$appScriptDate = '06/30/2022'
 	[string]$appScriptAuthor = 'Ryan McKenna'
 	##*===============================================
 	## Variables: Install Titles (Only set here to override defaults set by the toolkit)
@@ -118,10 +118,10 @@ Try {
 		[string]$installPhase = 'Pre-Installation'
 
 		## Show Welcome Message, close Internet Explorer if required, allow up to 3 deferrals, verify there is enough disk space to complete the install, and persist the prompt
-		Show-InstallationWelcome -CloseApps 'multisim,ultiboard,nilauncher,nilicensemanager,nipackagemanager' -CloseAppsCountdown 60 -CheckDiskSpace -PersistPrompt
+		Show-InstallationWelcome -CloseApps 'multisim,ultiboard,nilauncher,nilicensemanager,nipackagemanager,labview' -CloseAppsCountdown 60 -CheckDiskSpace -PersistPrompt
 
 		## Show Progress Message (with the default message)
-		Show-InstallationProgress
+		Show-InstallationProgress -StatusMessage "Installing NI Circuit Design Suite (Multisim and Ultiboard)"
 
 		## <Perform Pre-Installation tasks here>
 
@@ -139,9 +139,7 @@ Try {
 
 		## <Perform Installation tasks here>
 
-		$exitCode = Execute-Process "$dirFiles\Install.exe" -Parameters "--passive --accept-eulas --prevent-reboot"
-		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) { $mainExitCode = $exitCode.ExitCode }
-
+		$MainExitCode = Execute-Process "$dirFiles\ni-cds-educational_14.3_online.exe" -Parameters "--quiet --accept-eulas --prevent-reboot"
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -151,7 +149,7 @@ Try {
 		## <Perform Post-Installation tasks here>
 
 		## Add license server
-		Execute-Process -Path "$envProgramFilesX86\National Instruments\Shared\License ManagerNILicensingCmd.exe" -Parameters "/addservers VMWAS22:27010"
+		Execute-Process -Path "$envProgramFilesX86\National Instruments\Shared\License Manager\NILicensingCmd.exe" -Parameters "/addservers VMWAS22:27010"
 
 		## Display a message at the end of the install
 		If (-not $useDefaultMsi) {}
@@ -164,7 +162,7 @@ Try {
 		[string]$installPhase = 'Pre-Uninstallation'
 
 		## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing
-		Show-InstallationWelcome -CloseApps 'multisim,ultiboard,nilauncher,nilicensemanager,nipackagemanager' -CloseAppsCountdown 60 -PersistPrompt
+		Show-InstallationWelcome -CloseApps 'multisim,ultiboard,nilauncher,nilicensemanager,nipackagemanager,labview' -CloseAppsCountdown 60 -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -185,9 +183,7 @@ Try {
 
 		## <Perform Uninstallation tasks here>
 
-		$exitCode = Execute-Process "$envProgramFiles\National Instruments\NI Package Manager\nipkg.exe" -Parameters "remove --force-essential --force-locked --yes"
-		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) { $mainExitCode = $exitCode.ExitCode }
-
+		$mainExitCode = Execute-Process "$envProgramFiles\National Instruments\NI Package Manager\nipkg.exe" -Parameters "remove --force-essential --force-locked --yes"
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -196,7 +192,8 @@ Try {
 
 		## <Perform Post-Uninstallation tasks here>
 
-
+		Remove-Folder -Path "$envProgramFiles\National Instruments\" -ContinueonError $True
+		Remove-Folder -Path "$envProgramFilesX86\National Instruments\" -ContinueonError $True
 	}
 	ElseIf ($deploymentType -ieq 'Repair')
 	{
@@ -206,7 +203,7 @@ Try {
 		[string]$installPhase = 'Pre-Repair'
 
 		## Show Welcome Message, close Internet Explorer with a 60 second countdown before automatically closing
-		Show-InstallationWelcome -CloseApps 'multisim,ultiboard,nilauncher,nilicensemanager,nipackagemanager' -CloseAppsCountdown 60 -PersistPrompt
+		Show-InstallationWelcome -CloseApps 'multisim,ultiboard,nilauncher,nilicensemanager,nipackagemanager,labview' -CloseAppsCountdown 60 -PersistPrompt
 
 		## Show Progress Message (with the default message)
 		Show-InstallationProgress
@@ -226,8 +223,7 @@ Try {
 		## <Perform Repair tasks here>
 
 		# Repairs all recommended pacakges
-		$exitCode = Execute-Process "$envCommonProgramFiles\National Instruments\NI Package Manager\nipkg.exe" -Parameters "repair --include-recommended -yes"
-		If (($exitCode.ExitCode -ne "0") -and ($mainExitCode -ne "3010")) { $mainExitCode = $exitCode.ExitCode }
+		$mainExitCode = Execute-Process "$envProgramFiles\National Instruments\NI Package Manager\nipkg.exe" -Parameters "repair --yes --include-recommended"
 
 		##*===============================================
 		##* POST-REPAIR
@@ -235,7 +231,7 @@ Try {
 		[string]$installPhase = 'Post-Repair'
 
 		## <Perform Post-Repair tasks here>
-		Execute-Process -Path "$envProgramFilesX86\National Instruments\Shared\License ManagerNILicensingCmd.exe" -Parameters "/addservers VMWAS22:27010"
+		Execute-Process -Path "$envProgramFilesX86\National Instruments\Shared\License Manager\NILicensingCmd.exe" -Parameters "/addservers VMWAS22:27010"
 
 
     }
@@ -257,8 +253,8 @@ Catch {
 # SIG # Begin signature block
 # MIImVgYJKoZIhvcNAQcCoIImRzCCJkMCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCArSKkPZe5DcimN
-# cdh/MtPJGNhYq/BCtI9EmQrf625MJ6CCH8EwggVvMIIEV6ADAgECAhBI/JO0YFWU
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDixT2tlejHgv5f
+# hzoszWFWYkqxTP/AlH2M2Z8tYo+cs6CCH8EwggVvMIIEV6ADAgECAhBI/JO0YFWU
 # jTanyYqJ1pQWMA0GCSqGSIb3DQEBDAUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQI
 # DBJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoM
 # EUNvbW9kbyBDQSBMaW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2Vy
@@ -432,32 +428,32 @@ Catch {
 # ZDErMCkGA1UEAxMiU2VjdGlnbyBQdWJsaWMgQ29kZSBTaWduaW5nIENBIFIzNgIR
 # AKVN33D73PFMVIK48rFyyjEwDQYJYIZIAWUDBAIBBQCggYQwGAYKKwYBBAGCNwIB
 # DDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEE
-# AYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgDgtwxPDaCu9+
-# IylZZcCRiQCwVr6j32UaF/2WoT4JPagwDQYJKoZIhvcNAQEBBQAEggGAaosakDKg
-# nZEsrvGuJcEcxABAdxdxKjLY//jIFMVTSQwvxSjLAdpTTb8/QC9KqNGHpA4pQ8hd
-# /FhZ5dvz4dWGuDwFiFWCOYYOthDHQhsUDYFMnvBcrDHpF06UdN4ORAvEbSuvfmU5
-# L363TgGF2bxtw2Np+EjyR8QxwTaykwkAwjSqwWFke/WQ5ApicdoUDA5Y2mlTNA1p
-# Tp1NE+LVARI+tocXw6Zh4qhl/WS0kVObXrgF3w+d7Xzkp+hFukoEvndf8uFZ7QW0
-# A6u8P6ROWTZr2fs072Y1/RoHjg0IaNYSSGxKNFYX/vAnD9IMBqMGvytnICuWdaCo
-# u/E2Oq7/OxrweDpJWGUzzjQAGR8w4N8OigUWT7El7RFpa3fvXtIvcKy2qafBiKtc
-# WWgvo2a47n/S3uC7bvpyLFo6iaelbH2NKP2dFIgpupd5x7ukYn8W+K8ZKKUzXz7l
-# /seLleik90L4xBwvTZHnbxwlQMskj5+ypNJC+fGUuTu1SY1Ijq3uplmGoYIDTDCC
+# AYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgwIpxsMI8zwri
+# 3B8Zu4nZr2L+FpQIu+ZBKHa3BJf2Ae0wDQYJKoZIhvcNAQEBBQAEggGAnOVPu67W
+# xNfb27qOEIXEbD/VkR8nZkiG9LsBdHs3/LGXeBFWjV0Fb+hhO8b4Tfgz8kjD1XhR
+# GiheAIgWiC3K+VquyADr1MQOV1bJa/yXhkMjNNk3U6jSBst70BIRXlJFp/hgiWu/
+# E7fGRuCHUyne4AuKNfQ/2db2BfdsAumHRpwwjGqS5C89BrJoY6/rKMlPYUQn1RY+
+# YhH/nBWmAvvtdyF7cqUsFRbR00JPRDct2Fp2yNp2MYkxBC08KR1eyaWfQSea1IXZ
+# u8o1+h9d3FDp1mRPPPIpWUlCWUk3nE/0LjtR/MUPB4s3V011RaHdWnKR615nBTU2
+# NCiAAkXCFk9dfuTFeq9cUfC2grS2fsF68XW3SSA2XnjY/U/suN3ws4f/7VYc7AcM
+# 10yzWP2jlV+RxqKhSIgpWNmEMQi5cM9T+wS/sKWYojOxohgqMKs16WyzYG/J5eg4
+# 9UWBxlkTLbKQdq/IR32KOGB+uMnAAPpgsPaKw+udrWyqtqHtdJA/yxkEoYIDTDCC
 # A0gGCSqGSIb3DQEJBjGCAzkwggM1AgEBMIGSMH0xCzAJBgNVBAYTAkdCMRswGQYD
 # VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNV
 # BAoTD1NlY3RpZ28gTGltaXRlZDElMCMGA1UEAxMcU2VjdGlnbyBSU0EgVGltZSBT
 # dGFtcGluZyBDQQIRAJA5f5rSSjoT8r2RXwg4qUMwDQYJYIZIAWUDBAICBQCgeTAY
-# BgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA2Mjgx
-# NDE5NTBaMD8GCSqGSIb3DQEJBDEyBDCRbvua3yTl6YPH+8iJQ7YPqpLCh8ZqyT7y
-# t2rnw0kD11BdyXXrJx4S2/9AgjutGl0wDQYJKoZIhvcNAQEBBQAEggIASFyC5PqK
-# pl+D8sdnsgLKFMeJN22+X1R9GZIesfKT8PB/olZiXaIXVwnOMLvjAeu6fz00zIwV
-# hZzuc8BqiiwoWmdc/IxHV5YCSoOd/zE+cKColPlbpHDaEXBC15nKEWEVDnOQNiNj
-# Yd2Sa/sEq7QskqP7xvvK2Qr0G8CGbNi6mE9b5xEoZHZih1+lXCCi1cqB7Wq3DOkF
-# HjphYlmz7aE/wYt2ZcwiFcSs1cmSkMu7NzbuOgM1bYL3e8zXPPxkdzCLma5ISzQD
-# R6dEJ8Gq4X2t/wYEDk9bpL1vnHeecLxKOEIeOZJAuhDKBifiTzI/m5cdfY0fOymZ
-# PUnnCVqjveYaHSSUJIqcBTXY/UHKmB5lqcT9y7WNCtam1ME0HxjhwfiGpPPNhuY9
-# 4Y/MPsWEmh+9Qoe1F8YJ2+crGf3SywOZrJhxKWy113+wQvgyhZWM5yw/ytfWQ+Y9
-# kRA0/8CnxQ+mAWA/Zy9cpy7MctRiVRwG7cVZHCE3hkkN/w/6IEj1xo8G92qRadIl
-# Uurtze/F3hax/H+uDv5oTCUyAqixEDhqXSgUShxZH+cbiO7kA/DrKNO3bdQUQcAA
-# Nn/1z3deemNds1+WQv80XpCuQNszsuVM4P433Dck+0NVnEt/qWfOhGnKeeW++5Xo
-# ixErhMzE31zONZk6To49x0u9F8cOVXBZtG8=
+# BgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA2MzAy
+# MDI2NThaMD8GCSqGSIb3DQEJBDEyBDBD8H3T0UlQ8FaxyKFAig507eF4fyy3Y5sT
+# rkyw7zEYBpkfNxT7ejMaDEvHGQ1kIJwwDQYJKoZIhvcNAQEBBQAEggIAitj/yPbs
+# P5Iq6wmODsx+dPhA+c9P+WPfSWSAeTd0/xT6P7xxNWkjiqFGBAFnvJV4g6YXypaA
+# gvszExzMG9oQeab9rLXFcF/F94C/+60yHRix4Pp7Q89yqO+lmhRRHLjo7ZIWPXYj
+# 2hT/xlbzXMH07+OJyM7AsXDYHeAiZHvokYbSH9yd9UK8BlZG+UqNsRevf11cmy7X
+# 1EgtjhBEdmejs2f5KenEfsNic0sseUbRKA+Z3pXmLE7CmBE2uG45CbZzE0y5ekZ/
+# uHSkYxT0gieGHSlUCBdDB+kUA0OtZxYdlcjIU4V3SQ87E+xQgVT1aEiY0GhRY4Qd
+# tGeDDgG0Tjn0boilUGkWSikBIH8L48QFQTIJeAXEwMTj2jbGeIAe21S8MPwcs5Va
+# tS4jeT8i3TmGOINrmEoRLUXDpfY1IZH4z3KphljKFceH1h5cM8MOkNBiRYfx74+/
+# CHWcayrRikO6XcGqOiLGvh/wr0JzLRMenTQW20cW79g0Uq3bpTfRkMmnpYKkay1A
+# HYwuJv+7eb33eQnbTwQoy5fHJRwFuHscLew19sZ/Pe6faEqd6OiOy2SZPdS43JjM
+# KaIXF8ZxvhQ1S6IOOro4ch87yxzC/GgrmvcAmVxkxO0KZ4bJilkXvBH8xpHLXzQG
+# iL0ncVPyG0gOZrwWtd81MwADRLvIteF8zt8=
 # SIG # End signature block
