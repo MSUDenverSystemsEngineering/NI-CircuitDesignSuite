@@ -183,7 +183,15 @@ Try {
 
 		## <Perform Uninstallation tasks here>
 
-		$mainExitCode = Execute-Process "$envProgramFiles\National Instruments\NI Package Manager\nipkg.exe" -Parameters "remove --force-essential --force-locked --yes"
+		Show-InstallationPrompt -Title "NI Uninstall" -Message "Continuing with this uninstallation will uninstall ALL NI products including Multisim. Ultiboard, LabVIEW and the NI Package Manager.`n`n(Uninstall will proceed automatically in 30 seconds.)`n`nDo you want to proceed?" -ButtonRightText "Cancel" -ButtonLeftText "Continue" -Timeout 30 -ExitOnTimeout $False -OutVariable out
+		
+		if ($out -eq "Cancel") {
+			Exit-Script
+			$MainExitCode = 2
+		}
+		else {
+			$mainExitCode = Execute-Process "$envProgramFiles\National Instruments\NI Package Manager\nipkg.exe" -Parameters 'remove --force-essential --force-locked --yes'
+		}
 
 		##*===============================================
 		##* POST-UNINSTALLATION
@@ -253,8 +261,8 @@ Catch {
 # SIG # Begin signature block
 # MIImVgYJKoZIhvcNAQcCoIImRzCCJkMCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDixT2tlejHgv5f
-# hzoszWFWYkqxTP/AlH2M2Z8tYo+cs6CCH8EwggVvMIIEV6ADAgECAhBI/JO0YFWU
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBmIT4x6oa2Ayb+
+# YoRAaYa5fm/WgFbabXZ4G9nS/DqjgaCCH8EwggVvMIIEV6ADAgECAhBI/JO0YFWU
 # jTanyYqJ1pQWMA0GCSqGSIb3DQEBDAUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQI
 # DBJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoM
 # EUNvbW9kbyBDQSBMaW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2Vy
@@ -428,32 +436,32 @@ Catch {
 # ZDErMCkGA1UEAxMiU2VjdGlnbyBQdWJsaWMgQ29kZSBTaWduaW5nIENBIFIzNgIR
 # AKVN33D73PFMVIK48rFyyjEwDQYJYIZIAWUDBAIBBQCggYQwGAYKKwYBBAGCNwIB
 # DDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEE
-# AYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgwIpxsMI8zwri
-# 3B8Zu4nZr2L+FpQIu+ZBKHa3BJf2Ae0wDQYJKoZIhvcNAQEBBQAEggGAnOVPu67W
-# xNfb27qOEIXEbD/VkR8nZkiG9LsBdHs3/LGXeBFWjV0Fb+hhO8b4Tfgz8kjD1XhR
-# GiheAIgWiC3K+VquyADr1MQOV1bJa/yXhkMjNNk3U6jSBst70BIRXlJFp/hgiWu/
-# E7fGRuCHUyne4AuKNfQ/2db2BfdsAumHRpwwjGqS5C89BrJoY6/rKMlPYUQn1RY+
-# YhH/nBWmAvvtdyF7cqUsFRbR00JPRDct2Fp2yNp2MYkxBC08KR1eyaWfQSea1IXZ
-# u8o1+h9d3FDp1mRPPPIpWUlCWUk3nE/0LjtR/MUPB4s3V011RaHdWnKR615nBTU2
-# NCiAAkXCFk9dfuTFeq9cUfC2grS2fsF68XW3SSA2XnjY/U/suN3ws4f/7VYc7AcM
-# 10yzWP2jlV+RxqKhSIgpWNmEMQi5cM9T+wS/sKWYojOxohgqMKs16WyzYG/J5eg4
-# 9UWBxlkTLbKQdq/IR32KOGB+uMnAAPpgsPaKw+udrWyqtqHtdJA/yxkEoYIDTDCC
+# AYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgjT1RKZSkS0Br
+# hLalwpBjxGDNMrB4MsaAaRe086R7C7MwDQYJKoZIhvcNAQEBBQAEggGAKdNWjH9V
+# Bs98A/bRysn3rPU+vkPpKhLi+2SiSuX4B/WQIdctcXGd6N83Ax6bLTIqTkxVcAaw
+# 3bKrfWnAFOPQK8Nn9dPJm0TzLO5q4t0Spv6P3dPFiJmDX/fp2WQawCCFcmfopDfS
+# 6vIqJtQaWkdTWlDjZq1IgL5A2PdyzJgjnKHnWlCa3XWvJkc5obTlbGmrlmQ5fG8+
+# zHTUH8HCfkRIQJXIcEOWcBqf9k++86GCNL/eLBfPP3jmToSEAxS5lXRbVK1cvsA8
+# CyC5Wj5lO54FBWxCkrEXStNziR612ALWvN96qtfUh4r1z45c96V7yO9krr0tgTPK
+# +cVDjYfE+2KJcS+fi7t8NnezIvjKIs1z6V/BQrH3wdM/gkWIeiEiM7wG000d2LAg
+# 8CidPwaJvv4l7jNANwITLI1/CX2X0nk/75zFZYsTb/2G6FuOKV0uJ3nNk2Z6kU7j
+# RoA9etogIpHvlK0jjwH5vcSZ05GOdlS491x7wxKoRwP5NrZC7OAM47BkoYIDTDCC
 # A0gGCSqGSIb3DQEJBjGCAzkwggM1AgEBMIGSMH0xCzAJBgNVBAYTAkdCMRswGQYD
 # VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNV
 # BAoTD1NlY3RpZ28gTGltaXRlZDElMCMGA1UEAxMcU2VjdGlnbyBSU0EgVGltZSBT
 # dGFtcGluZyBDQQIRAJA5f5rSSjoT8r2RXwg4qUMwDQYJYIZIAWUDBAICBQCgeTAY
-# BgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA2MzAy
-# MDI2NThaMD8GCSqGSIb3DQEJBDEyBDBD8H3T0UlQ8FaxyKFAig507eF4fyy3Y5sT
-# rkyw7zEYBpkfNxT7ejMaDEvHGQ1kIJwwDQYJKoZIhvcNAQEBBQAEggIAitj/yPbs
-# P5Iq6wmODsx+dPhA+c9P+WPfSWSAeTd0/xT6P7xxNWkjiqFGBAFnvJV4g6YXypaA
-# gvszExzMG9oQeab9rLXFcF/F94C/+60yHRix4Pp7Q89yqO+lmhRRHLjo7ZIWPXYj
-# 2hT/xlbzXMH07+OJyM7AsXDYHeAiZHvokYbSH9yd9UK8BlZG+UqNsRevf11cmy7X
-# 1EgtjhBEdmejs2f5KenEfsNic0sseUbRKA+Z3pXmLE7CmBE2uG45CbZzE0y5ekZ/
-# uHSkYxT0gieGHSlUCBdDB+kUA0OtZxYdlcjIU4V3SQ87E+xQgVT1aEiY0GhRY4Qd
-# tGeDDgG0Tjn0boilUGkWSikBIH8L48QFQTIJeAXEwMTj2jbGeIAe21S8MPwcs5Va
-# tS4jeT8i3TmGOINrmEoRLUXDpfY1IZH4z3KphljKFceH1h5cM8MOkNBiRYfx74+/
-# CHWcayrRikO6XcGqOiLGvh/wr0JzLRMenTQW20cW79g0Uq3bpTfRkMmnpYKkay1A
-# HYwuJv+7eb33eQnbTwQoy5fHJRwFuHscLew19sZ/Pe6faEqd6OiOy2SZPdS43JjM
-# KaIXF8ZxvhQ1S6IOOro4ch87yxzC/GgrmvcAmVxkxO0KZ4bJilkXvBH8xpHLXzQG
-# iL0ncVPyG0gOZrwWtd81MwADRLvIteF8zt8=
+# BgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA3MDcw
+# MDIzMTBaMD8GCSqGSIb3DQEJBDEyBDCI2LAbpJyXL7M6TxLNEsaZDjfjOoaEkaig
+# VoJEDka7YQtWUnFYwFykqSabjWBxYy8wDQYJKoZIhvcNAQEBBQAEggIAETA8TvMA
+# h8W03yIq8Bqj8aWvi1xNYZ2tdUqHhAxTSuFYueeezV2yPO4ChUfNVC52Lp17Rbjb
+# jbriqQ6C6wc+upHWcT88oDwmf4n686KBDGLuVulMzQD28t29WiFNneFxKZZ0JK7e
+# BfAxeaY92gHz+jn7SgtLCqcbF9gxyLJDPSUc0wlJWbPc5nyCKaGJYFt3/1SsqgrA
+# lvR73l3hjdWM515OQWNOHvrLilu4FXUlWt6T8DHnN7QWowWpfcBQNbAj/DUZSMRo
+# dRuGUUfPgOL3eyO1WaHZBJRwaDEsuyiQqFtWG4692JFHw6cxAquCBH8WX96qz4lk
+# ijYf4NrTqeibx90bx4kjHAA95QEYjinKHhpiFBPZwcKPx0EpEugrJ416x0lusPhU
+# mbnwMFFOh93n87iROG/wlV66Uok7s4X3Mv8jt9JROt9qbMOtjMOd1iGbd6cdgv7I
+# wMIEMMN7o7MOpbIXNPSYTFHzs7n50geQl6O8pbkS+rAMhX22evQRObfEgR89z0Jz
+# x3umoIsyNDUPpcUbiy5NX2osvBougZh/0yzxM2Kkh7+ge08G/CGw6wTCmLVvJqe9
+# Y47JQeAbB3A8cJztJOy2TgKzfkRUB7Agl3BJPXUv8BgVivnlkY/Fb/lrYgfPDxZd
+# CZQQn0k4xoVZu87UtVTklCjnJWY0PzyF4D8=
 # SIG # End signature block
