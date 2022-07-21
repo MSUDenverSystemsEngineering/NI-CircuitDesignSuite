@@ -139,7 +139,9 @@ Try {
 
 		## <Perform Installation tasks here>
 
-		$MainExitCode = Execute-Process "$dirFiles\ni-cds-educational_14.3_online.exe" -Parameters "--quiet --accept-eulas --prevent-reboot"
+		Show-InstallationProgress -StatusMessage "Installing NI Circuit Design Suite"
+
+		$tempExitCode = Execute-Process "$dirFiles\ni-cds-educational_14.3_online.exe" -Parameters "--quiet --accept-eulas --prevent-reboot" -IgnoreExitCodes "-125071" -PassThru
 
 		##*===============================================
 		##* POST-INSTALLATION
@@ -152,6 +154,11 @@ Try {
 		Execute-Process -Path "$envProgramFilesX86\National Instruments\Shared\License Manager\NILicensingCmd.exe" -Parameters "/addservers VMWAS22:27010"
 		## Add shortcut for NI Launcher
 		Copy-File -Path "$dirSupportFiles\NI Launcher.lnk" -Destination $envCommonDesktop
+		#Exit script and pass exit code
+		If ($tempExitCode.ExitCode -eq -125071) {
+			Exit-Script -ExitCode 3010
+			}
+		
 
 		## Display a message at the end of the install
 		If (-not $useDefaultMsi) {}
@@ -263,8 +270,8 @@ Catch {
 # SIG # Begin signature block
 # MIImVgYJKoZIhvcNAQcCoIImRzCCJkMCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBAUPZFwibbEuFm
-# PmY9h9q/tyN+rMMB/a2dL4eJHr6INaCCH8EwggVvMIIEV6ADAgECAhBI/JO0YFWU
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCC08XgtYm6ZXtJY
+# /NJw67H8uKTKD2O52NDbyaZmumeUY6CCH8EwggVvMIIEV6ADAgECAhBI/JO0YFWU
 # jTanyYqJ1pQWMA0GCSqGSIb3DQEBDAUAMHsxCzAJBgNVBAYTAkdCMRswGQYDVQQI
 # DBJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcMB1NhbGZvcmQxGjAYBgNVBAoM
 # EUNvbW9kbyBDQSBMaW1pdGVkMSEwHwYDVQQDDBhBQUEgQ2VydGlmaWNhdGUgU2Vy
@@ -438,32 +445,32 @@ Catch {
 # ZDErMCkGA1UEAxMiU2VjdGlnbyBQdWJsaWMgQ29kZSBTaWduaW5nIENBIFIzNgIR
 # AKVN33D73PFMVIK48rFyyjEwDQYJYIZIAWUDBAIBBQCggYQwGAYKKwYBBAGCNwIB
 # DDEKMAigAoAAoQKAADAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEE
-# AYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgzPyre4n/R/nu
-# X990UZ71BzBHnj3697hFbOjH+vijIwAwDQYJKoZIhvcNAQEBBQAEggGABxIdf0qm
-# VD2ao0tjWb6Oh+/xYbwXJXN15/ChITOX4gGXPPiIl6GIE5Emi1o3Ct8tPjDtsQEv
-# f0lK6zHCH7awzbBYfZHI0Ma+B2A6r6RzeKbYTVDbuHrSn9IrcdDRBDCxpGCgnFKA
-# P8cnAqYUgM1CqOf9XsDxVX1DodTKf82BjeKPyLov+TXsSFcMlgFylpGUW+Gb+wnM
-# p2Cs75NFASbzGOYVmUfPTCYTjI1r9PHR7ATTnR/Uy3N9FhRRSqr7VrotlJBVi9xQ
-# T3CDmzVLWlFT+S9uqispLmcGwbjMkMcOYcHlsirnLeGvtW9ijPKKvx2/jPstuXDr
-# /juny7T+BDg2EdW1EvoCEQNcM59vGLfS1tvf/THARvWxw5I3Jk/mpk/naRTU7U7A
-# PPKOVnO9RQy29irH5RyGao3qhGyXdPVFqyyNuBzeIjCoR6v/DaX/rhzWIk7i+D1r
-# a7pTuUnCdWePOO2ISaG+sgJbu/A1kESBDA1YPdnVb1cM9QHmdFXES2gBoYIDTDCC
+# AYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQglUywl0l7XRTj
+# 8n9zjxgi7pSErnM6QCj6vNzZmkzvqqgwDQYJKoZIhvcNAQEBBQAEggGAneGG6MiX
+# koUkl4ngPPDUXfJwEvwsC0/J0qz6gGLVG44NQcr5visinMst34rt6pacfpwii+Vr
+# FXHKJvDucDSXcGHUCpiWWSEZNEr/pwHEkqN9/HGCiHXps2S+GpSxPkirMFJiDo1D
+# 49jMzBv3AuG0bkUqee814PcYAAEzvI6WTOSQbeNXjWTgHj5NYsyvXR7Hc/QGNVVO
+# C7dUp7nQPb6lgzbWjJV/hX6+LKT+v4oF7icJO6XQII5k/p+5aWb0LyQLupAd3qYW
+# iCtQDKR0A6dEmz5NeAZqUc8mDLaFklmz09BABIVfeG13CfHd7Fw/xp4dOXJOdyYY
+# gkd97j9E2ejEzcPVZ9v7pRhLcv3IN3LMUQrvuScgy1Rk5z3S4mPDk3m6P6RL1MCQ
+# WyR9I+j0N3wH9et+u1WEjAzUiqTwyBhc+ueQdbJi4LnMbRi4eaHDRcLrbR0D0dAj
+# Ktplt4wTaOcP3PswcXKKvbWdhreCWceRTNs6cm9jdWuiDsWa9GNIDZDUoYIDTDCC
 # A0gGCSqGSIb3DQEJBjGCAzkwggM1AgEBMIGSMH0xCzAJBgNVBAYTAkdCMRswGQYD
 # VQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGDAWBgNV
 # BAoTD1NlY3RpZ28gTGltaXRlZDElMCMGA1UEAxMcU2VjdGlnbyBSU0EgVGltZSBT
 # dGFtcGluZyBDQQIRAJA5f5rSSjoT8r2RXwg4qUMwDQYJYIZIAWUDBAICBQCgeTAY
-# BgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA3MTEx
-# OTU3NTNaMD8GCSqGSIb3DQEJBDEyBDDTaCJZjH8E3iyvqZ6qsLGzJMxLoEFjHmv3
-# AvW0UrfXphemlHA8KQQ8rSxnnKCO9zYwDQYJKoZIhvcNAQEBBQAEggIASHOw4+kO
-# r9o/gVXJ2afG+vVkgEslV8mRRd4+ihcCguoW1r6tG/x5VjkSs7g4RA8OldzBACfM
-# tIAbC9yx+1kQsLBv3usR8u+KeLgQhNeLtgcBWGlGHiMhdCppyj7b2gFBZP+xQjy2
-# NKxxPS8+MLB3Arr4ebHSY0zIFa73PE4eigKaXr5D28iMxek/0zcKoApEu67z0kfm
-# 0VUnT6JBvh9gvwzu9fAWZ4OjpkAyvfuLSyBTeCTYLn5jqyS88KGishxgbmZBAJGL
-# gZzPFrkh9QKerQKvrZ0iGaASOn1PjhnTshzOMTGo1EX2m5qq1h+CkiEyH+YRhuC8
-# 4mdxLtpZJrPHTire0ibn3NFinasuC/33hEr5w1BGRUzfOwb0L9PEqCNmemCyBPJ4
-# rbdkLay03PYsfh+0cWArUuKBNaLjYvxyyzNMvsPe5/OFX4dHxFt+hnG00eDkMYVX
-# DT1nwHXWMoyUO78H2A/6YgJEjEmZw63y+y6TB3tTEhwcM/v3M6vNM1kdkRL1P7wN
-# fjsGAjN6+ZzqH0t4Z83Tj9rkmOO0HVp7XdCfIKFVLe2DJjGE9mRjlA6SzX6n3VzU
-# ezi12d7/OgGiXWatS/1+4ZLDcSMcuyv0UigpIH3sFbTy3kawNMQ0hPl1+Zl7rI+b
-# 1oGLgLD56bI5xBB+6AGfhb+u5HChgeApkxY=
+# BgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA3MjEx
+# NTE1MDFaMD8GCSqGSIb3DQEJBDEyBDBlrLXRdyrqcwiprMaX0o6XA/XamsouwiDL
+# Pr+IFkV+PIiD8gTsSErRiJ0vPNAKojkwDQYJKoZIhvcNAQEBBQAEggIACgZSisrn
+# 7rSu/2ny4dlfXXXnOsZBKkqvR3+nSahKwMqaOmlQ3QBwpvP+lstOqUmroTRRuWTU
+# GV/Hq2e7MbUNsjZ5pU4igkeubYmiYelCSRZ2QAqsolEm6JDFE59/6pZmEWTiFs1E
+# K9DMPEebX6iH7JuwaCARy6mQ/LCI2frMPrh+4yoadNtD0wibwEtOn4CoMGcA7iot
+# pLkd5mxUAtu6c7TNslPnqj8C+2vAbO41uZbrwPlNTOgY/rfNAaLZKE3TH5OY4laR
+# OCE2G5g86MNluC34We5tzJtgkhF/wlb8tsQIY895yJhDKUKJJ0LgIQwBhgbHdaXo
+# yj5JoX/E8/XMGG8q0ZS3tPQl+XdUZeTSJDKFWMA2yzpQlQFwuhMEkt8wJ/PopBEE
+# xu4HGzUs5rjz5qUFLwBXlCZGeneJWc0h3CopkoXuqzn+pNrRsgt1bEsMtYEf3C55
+# WZcN3nz7/Vq1bea2t8KTJ/gN8kVGnTlrxWupRItNmNLp6xPS3qZAnWuj/ZHQuEdT
+# aYuxmK+c1kAtSZPmbxEY1TT7Tcx0Q4lFczG3ziBjdMjrEFpZUcwYV7VWdlLOdntI
+# rkab7DEL8Qvkc6qUEE49CnNLLhOhOUoBmMtfEFS1MnfVrkG50dTNlWV/aqsJW5TN
+# G0yQRC8595aKnVL2QdXh43LXIffjPF9CNOY=
 # SIG # End signature block
